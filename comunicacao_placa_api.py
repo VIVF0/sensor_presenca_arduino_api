@@ -2,14 +2,16 @@ import serial
 import requests
 import datetime
 import time
-
-apiUrl = "https://redoptimistictrust.vivf0.repl.co/api/usuario"
-url_get = "https://redoptimistictrust.vivf0.repl.co/api/usuario/status"
-url_alarme = "https://redoptimistictrust.vivf0.repl.co/api/usuario/status/alarme"
+import toml
+with open('config.toml', 'r') as file:
+    config = toml.load(file)
+apiUrl = config['API_PADRAO']
+url_get = config['API_GET_STATUS']
+url_alarme = config['API_ALARME']
 
 usuario = {
-    "usuario": "Vitor",
-    "senha": "123"
+    "usuario": config['USUARIO'],
+    "senha": config['SENHA']
 }
 
 def enviar_api(url, usuario, distancia):
