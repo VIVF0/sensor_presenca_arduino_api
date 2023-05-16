@@ -92,10 +92,11 @@ def home():
     return 'API ON'
 
 @app.route('/api/usuario',methods=['POST'])
-def api_usuario(email,senha):
+def api_usuario():
     data=request.get_json()
     if valida_usuario(data['Email'],data['Senha']):
-        retorno={'Status':'Ativado'}
+        alarme=busca_alarme(data['Email'])
+        retorno=alarme['Status']
     else:
         retorno={'Status':'Usuario não encontrado'}
     return jsonify(retorno)
@@ -107,17 +108,17 @@ def api_cria_alarme():
     retorno={'_id':identifica.inserted_id}
     return jsonify(retorno)
 
-@app.route('/api/statusalarme/<id>')
+'''@app.route('/api/statusalarme/<id>')
 def api_alarme(id):
     #consulta o banco para ver o estado do alarme definido pelo usuario
     retorno=alarme(id)
-    return jsonify(retorno)
+    return jsonify(retorno)'''
 
 @app.route('/api/post/presenca',methods=['POST'])
 def recebe_api():
     #recebe um aviso que o sensor pegou um presença e a nova distancia
     data=request.get_json()
-    if atualiza_alarme(data['id'],data['estado_sensor'],data['estado_buzzer']):
+    if atualiza_alarme(data['email'],data['estado_sensor'],data['estado_buzzer']):
         return 'True'
     return 'False'
 
