@@ -14,28 +14,31 @@ from pymongo import MongoClient
 from hashlib import sha256
 from bson import ObjectId
 
-db=MongoClient('')
+cliente=MongoClient('mongodb://172.17.0.2:27017')
+db=cliente.Sensor
 
 def criptografar(senha):
     hash_senha=sha256(senha.encode())
     return hash_senha.digest()
 
-def novo_usuario(email,nome,senha):
+def novo_usuario(email,nome,senha,db):
     try:
-        db.usuario.insert_one(
+        banco=db['usuario']
+        return banco.insert_one(
             {
                 'Email':email,
-                'Nome':nome,
-                'Senha':criptografar(senha)
-            }
+                    'Nome':nome,
+                    'Senha':criptografar(senha)
+                }
         )
         return True
     except:
         return False
     
-def cria_alarme(email):
+def cria_alarme(email,db):
     try:
-        return db.usuario.insert_one(
+        banco=db['usuario']
+        return banco.insert_one(
             {
                 'Email':email,
                 'Sensor':'Desligado',
@@ -46,9 +49,10 @@ def cria_alarme(email):
     except:
         return False
     
-def atualiza_alarme(id,estado_sensor,estado_buzzer,estado_status):
+def atualiza_alarme(id,estado_sensor,estado_buzzer,estado_status,db):
     try:
-        db.usuario.update_one(
+        banco=db['usuario']
+        banco.update_one(
             {
                 '_id':ObjectId(id)
             },
@@ -64,22 +68,25 @@ def atualiza_alarme(id,estado_sensor,estado_buzzer,estado_status):
     except:
         return False
     
-def valida_usuario(email,senha):
+def valida_usuario(email,senha,db):
     try:
-        resultado=db.usuario.fin({'Email':email,'Senha':criptografar(senha)})
+        banco=db['usuario']
+        resultado=banco.find({'Email':email,'Senha':criptografar(senha)})
         if resultado!=None:
             return True
         return False
     except:
         return False
 
-def busca_alarme(email):
-    resultado=db.alarme.fin({'Email':email})
+def busca_alarme(email,db):
+    banco=db['alarme']
+    resultado=banco.find({'Email':email})
     if resultado!=None:
         return resultado
     
-def alarme(id):
-    resultado=db.alarme.fin({'_id':id})
+def alarme(id,db):
+    banco=db['alarme']
+    resultado=banco.find({'_id':id})
     if resultado!=None:
         return resultado
 
@@ -94,32 +101,36 @@ def home():
 @app.route('/api/usuario',methods=['POST'])
 def api_usuario():
     data=request.get_json()
-    if valida_usuario(data['Email'],data['Senha']):
-        alarme=busca_alarme(data['Email'])
-        retorno=alarme['Status']
+    if valida_usuario(data['Email'],data['Senha'],db):
+        retorno={'Status':'Ativado'}
     else:
         retorno={'Status':'Usuario não encontrado'}
     return jsonify(retorno)
 
-@app.rout('/api/criaalarme',methods=['POST'])
+@app.route('/api/criaalarme',methods=['POST'])
 def api_cria_alarme():
     data=request.get_json()
-    identifica=cria_alarme(data['Email'])
+    identifica=cria_alarme(data['Email'],db)
     retorno={'_id':identifica.inserted_id}
     return jsonify(retorno)
 
-'''@app.route('/api/statusalarme/<id>')
+@app.route('/api/statusalarme/<id>')
 def api_alarme(id):
     #consulta o banco para ver o estado do alarme definido pelo usuario
-    retorno=alarme(id)
-    return jsonify(retorno)'''
+    retorno=alarme(id,db)
+    return jsonify(retorno)
 
 @app.route('/api/post/presenca',methods=['POST'])
 def recebe_api():
     #recebe um aviso que o sensor pegou um presença e a nova distancia
     data=request.get_json()
-    if atualiza_alarme(data['email'],data['estado_sensor'],data['estado_buzzer']):
+    if atualiza_alarme(data['id'],data['estado_sensor'],data['estado_buzzer'],db):
         return 'True'
     return 'False'
 
-app.run(host='0.0.0.0')
+'''usuario=input('Insira usuario: ')
+senha=input('Insira uma senha: ')
+email=input('Email: ')
+print(novo_usuario(email,usuario,senha,db))'''
+
+app.run()
