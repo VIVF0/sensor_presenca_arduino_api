@@ -1,18 +1,18 @@
 //Componentes Eletricos:
-const int trigPin = 2;
-const int echoPin = 15;
-const int buzzer = 13;
+const int trigPin = 8;
+const int echoPin = 7;
+const int buzzer = 10;
 const int channel = 0;
 const int resolution = 8;
-const int led_verde = 12;
-const int led_vermelho = 4;
+const int led_verde = 6;
+const int led_vermelho = 9;
 
 //Variaveis global:
 #define SOUND_SPEED 0.034
 #define CM_TO_INCH 0.393701
 long duration;
 float distanceCm;
-int valor_recebido;
+int valor_recebido=1;
 
 //Funcoes:
 void Distance();
@@ -20,8 +20,9 @@ void alarme();
 
 void setup() {
   Serial.begin(115200);
-  ledcSetup(channel, 5000, resolution);
-  ledcAttachPin(buzzer, channel);
+  //ledcSetup(channel, 5000, resolution);
+  //ledcAttachPin(buzzer, channel);
+  pinMode(buzzer,OUTPUT);
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(led_vermelho, OUTPUT);
@@ -40,7 +41,8 @@ void loop() {
   //Caso alarme estiver ligado:
   if(valor_recebido == '1' || valor_recebido == '2'){
     if (distanceCm <= 60) {
-        ledcWriteTone(channel, 1000);
+        //ledcWriteTone(channel, 1000);
+        tone(buzzer,5000);
         digitalWrite(led_vermelho, HIGH);
         digitalWrite(led_verde, LOW);
     }
@@ -56,7 +58,8 @@ void loop() {
 }
 
 void alarme(){
-  ledcWriteTone(channel, 0);
+  //ledcWriteTone(channel, 0);
+  noTone(buzzer);
   digitalWrite(led_vermelho, LOW);
   digitalWrite(led_verde, HIGH);
 }

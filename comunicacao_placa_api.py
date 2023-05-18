@@ -10,8 +10,8 @@ url_get = config['API_GET_STATUS']
 url_alarme = config['API_ALARME']
 
 usuario = {
-    "usuario": config['USUARIO'],
-    "senha": config['SENHA']
+    "Email": config['USUARIO'],
+    "Senha": config['SENHA']
 }
 
 def enviar_api(url, usuario, distancia):
@@ -25,7 +25,7 @@ def enviar_api(url, usuario, distancia):
 
 def get_api(url, usuario):
     try:
-        response = requests.post(url, json=usuario)
+        response = requests.get(url, json=usuario)
         response.raise_for_status()
         return response.json()
     except:
@@ -36,7 +36,7 @@ def api_alarme(url, usuario):
     json_data = {'usuario': usuario, 'Sensor': 'ativo', 'Momento': current_time}
     requests.post(url, json=json_data)
 
-ser = serial.Serial('COM4', 115200)
+ser = serial.Serial('/dev/ttyUSB0', 115200)
 
 valor = 0
 
@@ -45,17 +45,17 @@ while True:
     distancia_index = data.find('Distancia: ')
     distancia = data[distancia_index + 11:]
     print("Distancia:", distancia)
-    response = enviar_api(apiUrl, usuario, distancia)
+    #response = enviar_api(apiUrl, usuario, distancia)
     status = get_api(url_get, usuario)
     if status != False:
-        if status['status'] == 'ativado':
+        if status['Status'] == 'Ativado':
             valor = 1
-            if status['sensor'] != 'ativado':
+            if status['Sensor'] != 'Ativado':
                 valor = 2
         else:
             valor = 0
-        if float(distancia)<=60:
-            api_alarme(url_alarme, usuario)
+        #if float(distancia)<=60:
+        #    api_alarme(url_alarme, usuario)
     else:
         valor = 0
     print(valor)

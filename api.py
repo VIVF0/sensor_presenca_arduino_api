@@ -13,6 +13,7 @@ from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from hashlib import sha256
 from bson import ObjectId
+import json
 
 cliente=MongoClient('mongodb://172.17.0.2:27017')
 db=cliente.Sensor
@@ -37,7 +38,7 @@ def novo_usuario(email,nome,senha,db):
     
 def cria_alarme(email,db):
     try:
-        banco=db['usuario']
+        banco=db['alarme']
         return banco.insert_one(
             {
                 'Email':email,
@@ -78,17 +79,19 @@ def valida_usuario(email,senha,db):
     except:
         return False
 
-def busca_alarme(email,db):
-    banco=db['alarme']
-    resultado=banco.find({'Email':email})
-    if resultado!=None:
-        return resultado
-    
-def alarme(id,db):
-    banco=db['alarme']
-    resultado=banco.find({'_id':id})
-    if resultado!=None:
-        return resultado
+def busca_alarme(email, db):
+    banco = db['alarme']
+    resultado = banco.find({'Email': email})
+    if resultado is not None:
+        return list(resultado)  
+    return []
+
+def alarme(id, db):
+    banco = db['alarme']
+    resultado = banco.find({'_id': id})
+    if resultado is not None:
+        return list(resultado)  
+    return []
 
 
 app=Flask(__name__)
@@ -98,14 +101,17 @@ app.secrety_key='api_arduino'
 def home():
     return 'API ON'
 
-@app.route('/api/usuario',methods=['POST'])
+from bson import json_util
+
+@app.route('/api/usuario',methods=['POST','GET'])
 def api_usuario():
     data=request.get_json()
     if valida_usuario(data['Email'],data['Senha'],db):
-        retorno={'Status':'Ativado'}
+        retorno=busca_alarme(data['Email'],db)
+        retorno = json.loads(json_util.dumps(retorno)) 
     else:
         retorno={'Status':'Usuario não encontrado'}
-    return jsonify(retorno)
+    return jsonify(retorno[0])
 
 @app.route('/api/criaalarme',methods=['POST'])
 def api_cria_alarme():
@@ -128,9 +134,4 @@ def recebe_api():
         return 'True'
     return 'False'
 
-'''usuario=input('Insira usuario: ')
-senha=input('Insira uma senha: ')
-email=input('Email: ')
-print(novo_usuario(email,usuario,senha,db))'''
-
-app.run()
+app.run(debug=True)
