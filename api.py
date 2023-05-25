@@ -50,12 +50,12 @@ def cria_alarme(email,db):
     except:
         return False
     
-def atualiza_alarme(id,estado_sensor,estado_buzzer,estado_status,db):
+def atualiza_alarme(Email,estado_status,estado_sensor,estado_buzzer,db):
     try:
-        banco=db['usuario']
+        banco=db['alarme']
         banco.update_one(
             {
-                '_id':ObjectId(id)
+                'Email':Email
             },
             {'$set':
                 {
@@ -65,6 +65,7 @@ def atualiza_alarme(id,estado_sensor,estado_buzzer,estado_status,db):
                 }
             }
         )
+        print('Foi')
         return True
     except:
         return False
@@ -126,12 +127,10 @@ def api_alarme(id):
     retorno=alarme(id,db)
     return jsonify(retorno)
 
-@app.route('/api/post/presenca',methods=['POST'])
+@app.route('/api/presenca',methods=['POST','GET'])
 def recebe_api():
     #recebe um aviso que o sensor pegou um presença e a nova distancia
     data=request.get_json()
-    if atualiza_alarme(data['id'],data['estado_sensor'],data['estado_buzzer'],db):
-        return 'True'
-    return 'False'
+    return jsonify(atualiza_alarme(data['Email'],data['status'],data['estado_sensor'],data['estado_buzzer'],db))
 
 app.run(debug=True)
