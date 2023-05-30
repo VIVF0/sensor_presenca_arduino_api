@@ -1,0 +1,11 @@
+{% extends "template.html" %}
+
+{% block conteudo %}
+    <h1>Faça o Login</h1>
+    <form method="POST" action="{{url_for('login')}}">
+        <p><label>Email:</label></p><input type="text" name="email" required>
+        <p><label>Senha:</label></p><input type="password" name="senha" required>
+        <button type="submit">Logar</button>
+    </form>
+    <a href="{{url_for('cadastrar_usuario')}}">Cadastrar</a>
+{% endblock %}

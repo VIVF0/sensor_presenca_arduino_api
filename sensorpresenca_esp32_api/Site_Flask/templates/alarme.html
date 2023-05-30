@@ -1,0 +1,18 @@
+{% extends "template.html" %}
+
+{% block conteudo %}
+    <h1>Alarme do Email: {{alarme['Email']}}</h1>
+    <form method="POST" action="{{url_for('status_alarme',id=alarme['Email'])}}">
+    {% if alarme['Status']=='Ativado' %}
+        <button name="status" value="Desativado">Desativar Alarme</button>
+        {% if alarme['Buzzer']=='Ativado' %}
+            <button name="buzzer" value="Desativado">Desativar Buzzer</button>
+        {% endif %}
+        {% if alarme['Sensor']=='Ativado' %}
+            <button name="sensor" value="Desativado">Desativar Sensor</button>
+        {% endif %}
+    {% else %}
+        <button name="status" value="Ativado">Ativar Alarme</button>
+    {% endif %}
+    </form>
+{% endblock %}
