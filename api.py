@@ -28,9 +28,9 @@ def novo_usuario(email,nome,senha,db):
         return banco.insert_one(
             {
                 'Email':email,
-                    'Nome':nome,
-                    'Senha':criptografar(senha)
-                }
+                'Nome':nome,
+                'Senha':criptografar(senha)
+            }
         )
         return True
     except:
@@ -47,6 +47,7 @@ def cria_alarme(email,db):
                 'Status':'Desligado'
             }
         )
+        return True
     except:
         return False
     
@@ -114,12 +115,15 @@ def api_usuario():
         retorno={'Status':'Usuario não encontrado'}
     return jsonify(retorno[0])
 
-@app.route('/api/criaalarme',methods=['POST'])
+@app.route('/api/cria_usuario',methods=['POST'])
 def api_cria_alarme():
     data=request.get_json()
-    identifica=cria_alarme(data['Email'],db)
-    retorno={'_id':identifica.inserted_id}
-    return jsonify(retorno)
+    email=data['Email']
+    nome=data['Nome']
+    senha=data['Senha']
+    if (novo_usuario(email,nome,senha,db) and cria_alarme(email,db)):
+        return True
+    return False
 
 @app.route('/api/statusalarme/<id>')
 def api_alarme(id):
@@ -133,4 +137,4 @@ def recebe_api():
     data=request.get_json()
     return jsonify(atualiza_alarme(data['Email'],data['status'],data['estado_sensor'],data['estado_buzzer'],db))
 
-app.run(debug=True)
+app.run(port=5000, host='0.0.0.0',debug=True)

@@ -1,2 +1,0 @@
-API_PADRAO = 'http://127.0.0.1:5000/api/presenca'
-API_GET_STATUS='http://127.0.0.1:5000/api/usuario'
