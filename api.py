@@ -115,6 +115,16 @@ def api_usuario():
         retorno={'Status':'Usuario não encontrado'}
     return jsonify(retorno[0])
 
+@app.route('/api/cadastro_usuario',methods=['POST','GET'])
+def cadastro_usuario():
+    data=request.get_json()
+    if novo_usuario(data['Email'],data['Nome'],data['Senha'],db):
+        cria_alarme(data['Email'],db)
+        retorno={'Usuario':True}
+    else:
+        retorno={'Usuario':False}
+    return jsonify(retorno)
+
 @app.route('/api/cria_usuario',methods=['POST'])
 def api_cria_alarme():
     data=request.get_json()

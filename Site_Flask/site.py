@@ -4,9 +4,16 @@ import requests
 
 apiUrl = 'http://172.17.0.3:5000/api/presenca'
 url_get = 'http://172.17.0.3:5000/api/usuario'
+url_cadastro = 'http://172.17.0.3:5000/api/cadastro_usuario'
 
 def envia_usuario(email,senha,url):
     json={'Email':email,'Senha':senha}
+    response = requests.get(url, json=json)
+    response.raise_for_status()
+    return response.json()
+
+def cadastra_usuario_api(email,nome,senha,url):
+    json={'Email':email,'Senha':senha,'Nome':nome}
     response = requests.get(url, json=json)
     response.raise_for_status()
     return response.json()
@@ -54,7 +61,7 @@ def alarme():
     if not session.get('usuario'):
         return redirect(url_for('login'))
     alarme=envia_usuario(session.get('usuario'),session.get('senha'),url_get)
-    return render_template('alarme.html',alarme=alarme)
+    return render_template('alarme.html',alarme=alarme,titulo='Alarme')
 
 @app.post('/status_alarme/<id>')
 def status_alarme(id):
@@ -64,6 +71,16 @@ def status_alarme(id):
 
 @app.route('/cadastrar_usuario')
 def cadastrar_usuario():
-    pass
+    return render_template('cadastro_usuario.html',titulo='Cadastro de Usuario')
+
+@app.post('/cadastrar_usuario')
+def cadastrar_api():
+    retorno=cadastra_usuario_api(request.form['email'],request.form['nome'],request.form['senha'],url_cadastro)
+    if retorno['Usuario']:
+        session['usuario']=str(request.form.get('email'))
+        session['senha']=str(request.form.get('senha'))
+        return redirect(url_for('alarme'))
+    else:
+        return render_template('cadastro_usuario.html',titulo='Cadastro de Usuario',erro='Erro no Cadastro')
 
 app.run(port=8085, host='0.0.0.0',debug=True)
