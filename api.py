@@ -66,7 +66,6 @@ def atualiza_alarme(Email,estado_status,estado_sensor,estado_buzzer,db):
                 }
             }
         )
-        print('Foi')
         return True
     except:
         return False
@@ -143,7 +142,6 @@ def api_alarme(id):
 
 @app.route('/api/presenca',methods=['POST','GET'])
 def recebe_api():
-    #recebe um aviso que o sensor pegou um presença e a nova distancia
     data=request.get_json()
     return jsonify(atualiza_alarme(data['Email'],data['status'],data['estado_sensor'],data['estado_buzzer'],db))
 
