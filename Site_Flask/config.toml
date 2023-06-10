@@ -1,5 +1,0 @@
-API_PADRAO = 'http://172.17.0.3:5000/api/presenca'
-API_GET_STATUS='http://172.17.0.3:5000/api/usuario'
-API_ALARME='https://redoptimistictrust.vivf0.repl.co/api/usuario/status/alarme'
-USUARIO='teste@teste.com'
-SENHA='123'

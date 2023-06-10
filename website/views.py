@@ -1,34 +1,11 @@
 from flask import Flask, request, jsonify, render_template,redirect,session,url_for
 from flask_session import Session
-import requests
-
 apiUrl = 'http://172.17.0.3:5000/api/presenca'
 url_get = 'http://172.17.0.3:5000/api/usuario'
 url_cadastro = 'http://172.17.0.3:5000/api/cadastro_usuario'
 
-def envia_usuario(email,senha,url):
-    json={'Email':email,'Senha':senha}
-    response = requests.get(url, json=json)
-    response.raise_for_status()
-    return response.json()
-
-def cadastra_usuario_api(email,nome,senha,url):
-    json={'Email':email,'Senha':senha,'Nome':nome}
-    response = requests.get(url, json=json)
-    response.raise_for_status()
-    return response.json()
-
-def atualiza_alarme(id,status='Ativado',sensor='Ativado',buzzer='Ativado'):
-    global apiUrl
-    json={'Email':id,'status':status,'estado_sensor':sensor,'estado_buzzer':buzzer}
-    response = requests.post(apiUrl, json=json)
-    response.raise_for_status()
-    return response.json()
-
-app=Flask(__name__)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
+from app import app
+from helpers import *
 
 @app.route('/')
 def index():
@@ -82,5 +59,3 @@ def cadastrar_api():
         return redirect(url_for('alarme'))
     else:
         return render_template('cadastro_usuario.html',titulo='Cadastro de Usuario',erro='Erro no Cadastro')
-
-app.run(port=8085, host='0.0.0.0',debug=True)
