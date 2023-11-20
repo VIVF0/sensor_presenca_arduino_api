@@ -1,4 +1,9 @@
-# Sensor de Presença Arduino API
+# Sensor de Presença Arduino API  
+
+![GitHub](https://img.shields.io/github/license/VIVF0/sensor_presenca_arduino_api)
+![GitHub Repo Size](https://img.shields.io/github/repo-size/VIVF0/sensor_presenca_arduino_api)
+![GitHub Last Commit](https://img.shields.io/github/last-commit/VIVF0/sensor_presenca_arduino_api)
+
 Link Wokwi: https://wokwi.com/projects/363547799830028289 
 
 A Sensor de Presença Arduino API é um projeto que consiste em uma API desenvolvida em Python com Flask. A API recebe uma solicitação POST contendo um email e senha do usuário e retorna o estado do alarme do usuário. Esse estado é então enviado para uma placa Arduino Uno usando a biblioteca pySerial. Com base no estado do alarme, a placa Arduino executa diferentes ações, como acionar um buzzer e controlar um LED.
